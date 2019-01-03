@@ -8,10 +8,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import fr.mbds.org.securechat.R;
+import fr.mbds.org.securechat.database.Database;
 
 public class Register extends AppCompatActivity {
 
     EditText usernameBox;
+    EditText emailBox;
     EditText pwdBox;
     EditText pwdConfirmBox;
     TextView backLink;
@@ -23,6 +25,7 @@ public class Register extends AppCompatActivity {
         setContentView(R.layout.register);
 
         usernameBox = (EditText) findViewById(R.id.username_box);
+        emailBox = (EditText) findViewById(R.id.email_box);
         pwdBox = (EditText) findViewById(R.id.pwd_box);
         pwdConfirmBox = (EditText) findViewById(R.id.pwd_confirm_box);
         backLink = (TextView) findViewById(R.id.back_to_login_link);
@@ -44,14 +47,25 @@ public class Register extends AppCompatActivity {
     }
 
     public void register() {
-        if (!usernameBox.getText().toString().isEmpty() && usernameBox.getText().toString() != null
-                && pwdBox.getText().toString().equals(pwdConfirmBox.getText().toString())) {
-            //registerBtn.setBackgroundColor(Color.GREEN);
-            System.out.println("registered");
+        String username = usernameBox.getText().toString();
+        String email = emailBox.getText().toString();
+        String password = pwdBox.getText().toString();
+        String passwordConfirm = pwdConfirmBox.getText().toString();
+
+        if (!username.isEmpty() && username != null && !email.isEmpty() && email != null && password.equals(passwordConfirm)) {
+
+            Database db = Database.getInstance(getApplicationContext());
+
+            if (db.checkUserCanRegister(email, username)) {
+                db.createUser(username, email, password);
+                System.out.println("registered");
+            }
+            else {
+                System.out.println("username or email in use");
+            }
         }
         else {
-            //registerBtn.setBackgroundColor(Color.RED);
-            System.out.println("not registered");
+            System.out.println("Empty text boxes");
         }
     }
 

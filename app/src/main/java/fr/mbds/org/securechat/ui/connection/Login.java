@@ -14,7 +14,7 @@ import fr.mbds.org.securechat.ui.messaging.Messaging;
 
 public class Login extends AppCompatActivity {
 
-    EditText loginBox;
+    EditText emailBox;
     EditText pwdBox;
     TextView registerLink;
     AppCompatButton loginBtn;
@@ -24,7 +24,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
-        loginBox = (EditText) findViewById(R.id.login_box);
+        emailBox = (EditText) findViewById(R.id.email_box);
         pwdBox = (EditText) findViewById(R.id.pwd_box);
         registerLink = (TextView) findViewById(R.id.register_link);
         loginBtn = (AppCompatButton) findViewById(R.id.login_btn);
@@ -59,7 +59,7 @@ public class Login extends AppCompatActivity {
 
         Database db = Database.getInstance(getApplicationContext());
 
-        if (db.checkUser(loginBox.getText().toString(), pwdBox.getText().toString())) {
+        if (db.checkUserCanConnect(emailBox.getText().toString(), pwdBox.getText().toString())) {
             Intent messagingIntent = new Intent(this, Messaging.class);
             this.startActivity(messagingIntent);
         }

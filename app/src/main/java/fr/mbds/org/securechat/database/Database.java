@@ -84,7 +84,7 @@ public class Database {
         return persons;
     }
 
-    public boolean checkUser(String email, String password) {
+    public boolean checkUserCanConnect(String email, String password) {
         String[] columns = {
                 BaseColumns._ID
         };
@@ -111,6 +111,35 @@ public class Database {
         }
 
         return false;
+    }
+
+    public boolean checkUserCanRegister(String email, String username) {
+        String[] columns = {
+                BaseColumns._ID
+        };
+        SQLiteDatabase db = contactHelper.getReadableDatabase();
+        String selection = ContactContract.FeedContact.COLUMN_NAME_EMAIL + " = ?" + " OR " + ContactContract.FeedContact.COLUMN_NAME_USERNAME + " = ?";
+
+        String[] selectionArgs = {email, username};
+
+        Cursor cursor = db.query(
+                TABLE_NAME, //Table to query
+                columns,                                //columns to return
+                selection,                              //columns for the WHERE clause
+                selectionArgs,                          //The values for the WHERE clause
+                null,                          //group the rows
+                null,                           //filter by row groups
+                null);                         //The sort order
+
+        int cursorCount = cursor.getCount();
+
+        cursor.close();
+        db.close();
+        if (cursorCount > 0) {
+            return false;
+        }
+
+        return true;
     }
 
     public void deleteAll() {
