@@ -9,14 +9,14 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import fr.mbds.org.securechat.R;
-import fr.mbds.org.securechat.database.entities.Person;
+import fr.mbds.org.securechat.database.entities.User;
 import fr.mbds.org.securechat.database.viewholders.ContactViewHolder;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactViewHolder> {
 
-    private List<Person> contacts;
+    private List<User> contacts;
 
-    public ContactAdapter(List<Person> contacts) {
+    public ContactAdapter(List<User> contacts) {
         this.contacts = contacts;
     }
 
@@ -30,8 +30,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ContactViewHolder contactViewHolder, int i) {
-        contactViewHolder.firstname.setText(contacts.get(i).firstname);
-        contactViewHolder.lastname.setText(contacts.get(i).lastname);
+        contactViewHolder.username.setText(contacts.get(i).username);
     }
 
     @Override

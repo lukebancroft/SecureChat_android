@@ -14,18 +14,10 @@
         android:src="@mipmap/ic_launcher_round" />
 
     <TextView
-        android:id="@+id/firstname_text"
+        android:id="@+id/username_text"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="firstname"
-        android:textSize="30sp" />
-
-    <TextView
-        android:id="@+id/lastname_text"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginStart="10dp"
-        android:text="lastname"
+        android:text="username"
         android:textSize="30sp" />
 
 

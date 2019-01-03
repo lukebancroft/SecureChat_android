@@ -23,7 +23,7 @@ import java.util.List;
 import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.database.Database;
 import fr.mbds.org.securechat.database.adapters.ContactAdapter;
-import fr.mbds.org.securechat.database.entities.Person;
+import fr.mbds.org.securechat.database.entities.User;
 
 public class ContactListFragment extends Fragment {
 
@@ -32,7 +32,7 @@ public class ContactListFragment extends Fragment {
     AppCompatButton transferBtn;
 
     RecyclerView recyclerView;
-    List<Person> contacts;
+    List<User> contacts;
     ContactAdapter contactAdapter;
 
     private long startClickTime;
@@ -56,19 +56,8 @@ public class ContactListFragment extends Fragment {
         transferBtn = (AppCompatButton) mainView.findViewById(R.id.transfer_btn);
 
         Database db = Database.getInstance(getContext());
-        //db.deleteAll();
 
-        if (db.readPerson().size() == 0) {
-            db.addPerson("John", "Snow");
-            db.addPerson("Mohamed", "Ali");
-            db.addPerson("Alfred", "Pennyworth");
-            db.addPerson("Foo", "Bar");
-            db.addPerson("Bruce", "Wayne");
-            db.addPerson("Matt", "LeBlanc");
-            db.addPerson("Bat", "Man");
-        }
-
-        contacts = db.readPerson();
+        contacts = db.getUsers();
         contactAdapter = new ContactAdapter(contacts);
 
         recyclerView = (RecyclerView) mainView.findViewById(R.id.recycler_view);
@@ -101,8 +90,7 @@ public class ContactListFragment extends Fragment {
                         int pos = recyclerView.getChildAdapterPosition(child);
                         if (pos >= 0) {
                             View itemView = recyclerView.getChildAt(pos);
-                            callable.transferData(((TextView) itemView.findViewById(R.id.firstname_text)).getText().toString() +
-                                    " " + ((TextView) itemView.findViewById(R.id.lastname_text)).getText().toString());
+                            callable.transferData(((TextView) itemView.findViewById(R.id.username_text)).getText().toString());
                             return true;
                         }
 

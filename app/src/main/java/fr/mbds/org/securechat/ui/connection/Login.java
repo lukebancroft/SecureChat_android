@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import fr.mbds.org.securechat.R;
+import fr.mbds.org.securechat.database.Database;
+import fr.mbds.org.securechat.ui.messaging.Messaging;
 
 public class Login extends AppCompatActivity {
 
@@ -40,16 +42,26 @@ public class Login extends AppCompatActivity {
                 goToRegister();
             }
         });
+
+        Database db = Database.getInstance(getApplicationContext());
+
+        //db.deleteAll();
+
+        if (db.getUsers().size() == 0) {
+            db.createUser("spooki", "spooki@gmail.com", "123");
+            db.createUser("zoanthr", "zoanthr@gmail.com", "123");
+            db.createUser("pracc", "pracc@gmail.com", "123");
+            db.createUser("delirium", "delirium@gmail.com", "123");
+        }
     }
 
     public void login() {
-        if (loginBox.getText().toString().equals("spooki") && pwdBox.getText().toString().equals("123")) {
-            //loginBtn.setBackgroundColor(Color.GREEN);
-            System.out.println("logged");
-        }
-        else {
-            //loginBtn.setBackgroundColor(Color.RED);
-            System.out.println("not logged");
+
+        Database db = Database.getInstance(getApplicationContext());
+
+        if (db.checkUser(loginBox.getText().toString(), pwdBox.getText().toString())) {
+            Intent messagingIntent = new Intent(this, Messaging.class);
+            this.startActivity(messagingIntent);
         }
     }
 

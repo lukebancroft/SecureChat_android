@@ -8,13 +8,11 @@ import fr.mbds.org.securechat.R;
 
 public class ContactViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView firstname;
-    public TextView lastname;
+    public TextView username;
 
     public ContactViewHolder(View itemView) {
         super(itemView);
-        firstname = (TextView)itemView.findViewById(R.id.firstname_text);
-        lastname = (TextView)itemView.findViewById(R.id.lastname_text);
+        username = (TextView)itemView.findViewById(R.id.username_text);
     }
 
 }

@@ -13,13 +13,14 @@ public class ContactHelper extends SQLiteOpenHelper {
     }
 
     public static final String DATABASE_NAME = "ContactDb.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + Database.ContactContract.FeedContact.TABLE_NAME + " (" +
                     Database.ContactContract.FeedContact._ID + " INTEGER PRIMARY KEY," +
-                    Database.ContactContract.FeedContact.COLUMN_NAME_LASTNAME + " TEXT," +
-                    Database.ContactContract.FeedContact.COLUMN_NAME_FIRSTNAME + " TEXT)";
+                    Database.ContactContract.FeedContact.COLUMN_NAME_USERNAME + " TEXT," +
+                    Database.ContactContract.FeedContact.COLUMN_NAME_EMAIL + " TEXT," +
+                    Database.ContactContract.FeedContact.COLUMN_NAME_PASSWORD + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + Database.ContactContract.FeedContact.TABLE_NAME;
