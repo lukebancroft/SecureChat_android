@@ -1,11 +1,14 @@
 package fr.mbds.org.securechat.ui.connection;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import fr.mbds.org.securechat.R;
@@ -14,6 +17,7 @@ import fr.mbds.org.securechat.ui.messaging.Messaging;
 
 public class Login extends AppCompatActivity {
 
+    LinearLayout loginLayout;
     EditText emailBox;
     EditText pwdBox;
     TextView registerLink;
@@ -24,6 +28,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
+        loginLayout = (LinearLayout) findViewById(R.id.login_layout);
         emailBox = (EditText) findViewById(R.id.email_box);
         pwdBox = (EditText) findViewById(R.id.pwd_box);
         registerLink = (TextView) findViewById(R.id.register_link);
@@ -55,11 +60,40 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    public void login() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                Snackbar.make(loginLayout, "Account created", Snackbar.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public void login() {
+        Boolean fieldsValid = false;
         Database db = Database.getInstance(getApplicationContext());
 
-        if (db.checkUserCanConnect(emailBox.getText().toString(), pwdBox.getText().toString())) {
+        if (pwdBox.getText().toString().isEmpty()) {
+            pwdBox.requestFocus();
+            pwdBox.setError("Enter password");
+            fieldsValid = false;
+        } else {
+            pwdBox.setError(null);
+            fieldsValid = true;
+        }
+
+        if (emailBox.getText().toString().isEmpty()) {
+            emailBox.requestFocus();
+            emailBox.setError("Enter email");
+            fieldsValid = false;
+        } else {
+            emailBox.setError(null);
+            fieldsValid = true;
+        }
+
+        if (fieldsValid && !pwdBox.getText().toString().isEmpty() && !emailBox.getText().toString().isEmpty()
+            && db.checkUserCanConnect(emailBox.getText().toString(), pwdBox.getText().toString())) {
             Intent messagingIntent = new Intent(this, Messaging.class);
             this.startActivity(messagingIntent);
         }
@@ -67,7 +101,7 @@ public class Login extends AppCompatActivity {
 
     public void goToRegister() {
         Intent registerIntent = new Intent(this, Register.class);
-        this.startActivity(registerIntent);
+        this.startActivityForResult(registerIntent, 1);
     }
 
 }
