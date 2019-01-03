@@ -31,7 +31,7 @@ public class DecryptionTester extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ezdecrypt);
+        setContentView(R.layout.decrypt);
 
         encryption = new Encryption("test");
 

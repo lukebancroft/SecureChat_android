@@ -23,7 +23,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactViewHolder> {
     @NonNull
     @Override
     public ContactViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.ezcontactitem, viewGroup, false);
+        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.contactitem, viewGroup, false);
 
         return new ContactViewHolder(itemView);
     }

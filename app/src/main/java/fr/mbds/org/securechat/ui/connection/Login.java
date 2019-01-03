@@ -20,7 +20,7 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ezlogin);
+        setContentView(R.layout.login);
 
         loginBox = (EditText) findViewById(R.id.login_box);
         pwdBox = (EditText) findViewById(R.id.pwd_box);

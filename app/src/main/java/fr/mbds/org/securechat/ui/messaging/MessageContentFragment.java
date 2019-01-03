@@ -1,4 +1,4 @@
-package fr.mbds.org.securechat.ui.mainactivity;
+package fr.mbds.org.securechat.ui.messaging;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import fr.mbds.org.securechat.R;
 
-public class SecActivityFragment extends Fragment {
+public class MessageContentFragment extends Fragment {
 
     TextView text;
     String txt="";
@@ -20,7 +20,7 @@ public class SecActivityFragment extends Fragment {
     iMessages messages;
     boolean isPaused = false;
 
-    public SecActivityFragment() {
+    public MessageContentFragment() {
 
     }
 
@@ -44,7 +44,7 @@ public class SecActivityFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View secView = inflater.inflate(R.layout.ezfrag_sec, container, false);
+        View secView = inflater.inflate(R.layout.messagecontent, container, false);
         backBtn = (AppCompatButton) secView.findViewById(R.id.back_to_messages_btn);
         text = (TextView) secView.findViewById(R.id.sec_text);
 

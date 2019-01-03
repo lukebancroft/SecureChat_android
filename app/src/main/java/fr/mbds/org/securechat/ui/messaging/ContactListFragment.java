@@ -1,4 +1,4 @@
-package fr.mbds.org.securechat.ui.mainactivity;
+package fr.mbds.org.securechat.ui.messaging;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -25,7 +25,7 @@ import fr.mbds.org.securechat.database.Database;
 import fr.mbds.org.securechat.database.adapters.ContactAdapter;
 import fr.mbds.org.securechat.database.entities.Person;
 
-public class MainActivityFragment extends Fragment {
+public class ContactListFragment extends Fragment {
 
     iCallable callable;
     EditText transferBox;
@@ -38,7 +38,7 @@ public class MainActivityFragment extends Fragment {
     private long startClickTime;
 
 
-    public MainActivityFragment() {
+    public ContactListFragment() {
 
     }
 
@@ -50,7 +50,7 @@ public class MainActivityFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View mainView = inflater.inflate(R.layout.ezfrag_main, container, false);
+        View mainView = inflater.inflate(R.layout.contactlist, container, false);
 
         transferBox = (EditText) mainView.findViewById(R.id.transfer_box);
         transferBtn = (AppCompatButton) mainView.findViewById(R.id.transfer_btn);

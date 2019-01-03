@@ -20,7 +20,7 @@ public class Register extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ezregister);
+        setContentView(R.layout.register);
 
         usernameBox = (EditText) findViewById(R.id.username_box);
         pwdBox = (EditText) findViewById(R.id.pwd_box);

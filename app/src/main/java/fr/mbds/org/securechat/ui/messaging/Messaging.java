@@ -1,4 +1,4 @@
-package fr.mbds.org.securechat.ui.mainactivity;
+package fr.mbds.org.securechat.ui.messaging;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -8,13 +8,13 @@ import android.widget.FrameLayout;
 
 import fr.mbds.org.securechat.R;
 
-public class MainActivity extends AppCompatActivity implements MainActivityFragment.iCallable, SecActivityFragment.iMessages {
+public class Messaging extends AppCompatActivity implements ContactListFragment.iCallable, MessageContentFragment.iMessages {
 
     AppCompatButton switchBtn;
     boolean isInitialState = false;
     FrameLayout fl, fl2;
-    MainActivityFragment maf = new MainActivityFragment();
-    SecActivityFragment sec = new SecActivityFragment();
+    ContactListFragment maf = new ContactListFragment();
+    MessageContentFragment sec = new MessageContentFragment();
     FragmentTransaction fragmentTransaction;
 
     @Override
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ezmain);
+        setContentView(R.layout.messaging);
 
         fl = (FrameLayout) findViewById(R.id.fragmentHolder);
         fl2 = (FrameLayout) findViewById(R.id.fragmentHolder2);

@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
 
-        <activity android:name=".ui.mainactivity.MainActivity" android:label="@string/app_name">
+        <activity android:name=".ui.connection.Login" android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <action android:name="fr.mbds.org.ez_app.MainActivity"/>
@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
 
-        <activity  android:name=".ui.connection.Login" android:label="@string/app_name"/>
+        <activity  android:name=".ui.messaging.Messaging" android:label="@string/app_name"/>
         <activity  android:name=".ui.connection.Register" android:label="@string/app_name"/>
         <activity  android:name=".ui.encryption.DecryptionTester" android:label="@string/app_name"/>
 
