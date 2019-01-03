@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">SecureChat</string>
+
+    <!-- Login/Register -->
+    <string name="login_text">Login</string>
+    <string name="username_text">Username</string>
+    <string name="pwd_text">Password</string>
+    <string name="pwd_confirm_text">Confirm password</string>
+    <string name="login_btn_text">Sign in</string>
+    <string name="register_btn_text">Sign up</string>
+    <string name="register_link_text">Not a member? Register</string>
+    <string name="back_to_login_link_text">Already have an account? Login</string>
+
+    <!-- Messaging-->
+    <string name="switch_btn_text">Switch</string>
+    <string name="back_to_messages_btn_text">Back</string>
+
+    <!-- Encryption -->
+    <string name="encrypt_btn">Encrypt</string>
+    <string name="decrypt_btn">Decrypt</string>
+    <string name="encrypted_text">[Encrypted text]</string>
+    <string name="decrypted_text">[Decrypted text]</string>
+    <string name="encrypt_box_text">Decrypt this</string>
+    <string name="decrypt_box_text">Encrypt this</string>
+</resources>
