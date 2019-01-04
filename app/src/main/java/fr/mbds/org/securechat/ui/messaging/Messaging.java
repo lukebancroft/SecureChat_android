@@ -20,13 +20,13 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     FloatingActionButton addButton;
     boolean isInitialState = false;
     FrameLayout fl, fl2;
-    ContactListFragment maf = new ContactListFragment();
-    MessageContentFragment sec = new MessageContentFragment();
+    ContactListFragment contactList = new ContactListFragment();
+    MessageContentFragment messageContent = new MessageContentFragment();
     FragmentTransaction fragmentTransaction;
 
     @Override
     public void transferData(String s) {
-        sec.setText(s);
+        messageContent.setText(s);
         goToMessages();
     }
 
@@ -52,20 +52,21 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
         switchBtn = (AppCompatButton) findViewById(R.id.switch_btn);
         addButton = (FloatingActionButton) findViewById(R.id.add_button);
 
+        if (switchBtn != null && addButton != null) {
+            switchBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switchViews();
+                }
+            });
 
-        switchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchViews();
-            }
-        });
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToAddContact();
-            }
-        });
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goToAddContact();
+                }
+            });
+        }
 
         switchViews();
     }
@@ -75,8 +76,9 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
 
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
-                Toast.makeText(getApplicationContext(), "Contact added.",
-                        Toast.LENGTH_LONG).show();
+                //isInitialState = !isInitialState;
+                //switchViews();
+                Toast.makeText(getApplicationContext(), "Contact added.", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -88,19 +90,21 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
             if(!isInitialState) {
-                fragmentTransaction.replace(fl.getId(), maf);
+                fragmentTransaction.replace(fl.getId(), contactList);
                 isInitialState = true;
+                addButton.show();
             }
             else {
-                fragmentTransaction.replace(fl.getId(), sec);
+                fragmentTransaction.replace(fl.getId(), messageContent);
                 isInitialState = false;
+                if (addButton != null) {addButton.hide();}
             }
             fragmentTransaction.commit();
         }
         else {
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(fl.getId(), maf);
-            fragmentTransaction.add(fl2.getId(), sec);
+            fragmentTransaction.add(fl.getId(), contactList);
+            fragmentTransaction.add(fl2.getId(), messageContent);
             fragmentTransaction.commit();
         }
     }
