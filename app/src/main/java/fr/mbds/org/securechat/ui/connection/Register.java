@@ -17,11 +17,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.database.Database;
@@ -29,6 +36,7 @@ import fr.mbds.org.securechat.database.Database;
 public class Register extends AppCompatActivity {
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     LinearLayout registerLayout;
     EditText usernameBox;
     EditText emailBox;
@@ -130,8 +138,24 @@ public class Register extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                    setResult(Activity.RESULT_OK);
-                                                    finish();
+                                                    FirebaseUser user = mAuth.getCurrentUser();
+
+                                                    // Create user in users collection
+                                                    Map<String, Object> newUser = new HashMap<>();
+                                                    newUser.put("uid", user.getUid());
+                                                    newUser.put("username", user.getDisplayName());
+                                                    newUser.put("email", user.getEmail());
+
+                                                    db.collection("users")
+                                                            .document(user.getUid())
+                                                            .set(newUser)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    setResult(Activity.RESULT_OK);
+                                                                    finish();
+                                                                }
+                                                            });
                                                 }
                                             }
                                         });
@@ -142,10 +166,6 @@ public class Register extends AppCompatActivity {
                         }
                     });
         }
-    }
-
-    public void firebaseRegister() {
-
     }
 
     public void goToLogin() {

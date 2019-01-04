@@ -61,16 +61,6 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        Database db = Database.getInstance(getApplicationContext());
-
-        //db.deleteAll();
-
-        if (db.getUsers().size() == 0) {
-            db.createUser("spooki", "spooki@gmail.com", "123");
-            db.createUser("zoanthr", "zoanthr@gmail.com", "123");
-            db.createUser("pracc", "pracc@gmail.com", "123");
-            db.createUser("delirium", "delirium@gmail.com", "123");
-        }
     }
 
     @Override

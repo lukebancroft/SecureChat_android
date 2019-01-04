@@ -23,7 +23,7 @@ import java.util.List;
 import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.database.Database;
 import fr.mbds.org.securechat.database.adapters.ContactAdapter;
-import fr.mbds.org.securechat.database.entities.User;
+import fr.mbds.org.securechat.database.entities.Contact;
 
 public class ContactListFragment extends Fragment {
 
@@ -32,7 +32,7 @@ public class ContactListFragment extends Fragment {
     AppCompatButton transferBtn;
 
     RecyclerView recyclerView;
-    List<User> contacts;
+    List<Contact> contacts;
     ContactAdapter contactAdapter;
 
     private long startClickTime;
@@ -57,7 +57,7 @@ public class ContactListFragment extends Fragment {
 
         Database db = Database.getInstance(getContext());
 
-        contacts = db.getUsers();
+        contacts = db.getContacts();
         contactAdapter = new ContactAdapter(contacts);
 
         recyclerView = (RecyclerView) mainView.findViewById(R.id.recycler_view);
