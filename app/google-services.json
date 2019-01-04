@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "694958654114",
+    "firebase_url": "https://chat-70db7.firebaseio.com",
+    "project_id": "chat-70db7",
+    "storage_bucket": "chat-70db7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:694958654114:android:52fca3ae6826eaec",
+        "android_client_info": {
+          "package_name": "fr.mbds.org.securechat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "694958654114-9spnlnncaddt2luqkt0gb02qjetav69u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCi0BdRb-JvkJib2vSuiOQVHHeW1vjpOBI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

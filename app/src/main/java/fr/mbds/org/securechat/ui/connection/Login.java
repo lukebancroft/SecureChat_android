@@ -3,6 +3,7 @@ package fr.mbds.org.securechat.ui.connection;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -10,6 +11,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.database.Database;
@@ -17,6 +25,7 @@ import fr.mbds.org.securechat.ui.messaging.Messaging;
 
 public class Login extends AppCompatActivity {
 
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
     LinearLayout loginLayout;
     EditText emailBox;
     EditText pwdBox;
@@ -27,6 +36,10 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+
+        if (mAuth.getCurrentUser() != null) {
+            goToMessaging();
+        }
 
         loginLayout = (LinearLayout) findViewById(R.id.login_layout);
         emailBox = (EditText) findViewById(R.id.email_box);
@@ -65,7 +78,8 @@ public class Login extends AppCompatActivity {
 
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
-                Snackbar.make(loginLayout, "Account created", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Account created.",
+                        Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -92,16 +106,32 @@ public class Login extends AppCompatActivity {
             fieldsValid = true;
         }
 
-        if (fieldsValid && !pwdBox.getText().toString().isEmpty() && !emailBox.getText().toString().isEmpty()
-            && db.checkUserCanConnect(emailBox.getText().toString(), pwdBox.getText().toString())) {
-            Intent messagingIntent = new Intent(this, Messaging.class);
-            this.startActivity(messagingIntent);
+        if (fieldsValid && !pwdBox.getText().toString().isEmpty() && !emailBox.getText().toString().isEmpty()) {
+            mAuth.signInWithEmailAndPassword(emailBox.getText().toString(), pwdBox.getText().toString())
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                //FirebaseUser user = mAuth.getCurrentUser();
+                                goToMessaging();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Incorrect email or password.",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
         }
     }
 
     public void goToRegister() {
         Intent registerIntent = new Intent(this, Register.class);
         this.startActivityForResult(registerIntent, 1);
+    }
+
+    public void goToMessaging() {
+        Intent messagingIntent = new Intent(this, Messaging.class);
+        this.startActivity(messagingIntent);
     }
 
 }

@@ -4,20 +4,31 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.database.Database;
 
 public class Register extends AppCompatActivity {
 
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
     LinearLayout registerLayout;
     EditText usernameBox;
     EditText emailBox;
@@ -56,7 +67,7 @@ public class Register extends AppCompatActivity {
 
     public void register() {
         Boolean fieldsValid = true;
-        String username = usernameBox.getText().toString();
+        final String username = usernameBox.getText().toString();
         String email = emailBox.getText().toString();
         String password = pwdBox.getText().toString();
         String passwordConfirm = pwdConfirmBox.getText().toString();
@@ -72,7 +83,7 @@ public class Register extends AppCompatActivity {
         }
 
         // Check password empty
-        if (password.isEmpty()) {
+        if (password.isEmpty() || password.length() < 6) {
             pwdBox.requestFocus();
             pwdBox.setError("Enter password");
             fieldsValid = false;
@@ -103,26 +114,38 @@ public class Register extends AppCompatActivity {
 
         if (fieldsValid) {
 
-            Database db = Database.getInstance(getApplicationContext());
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = mAuth.getCurrentUser();
 
-            if (db.checkUserCanRegister(email, username)) {
-                //db.createUser(username, email, password);
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(username)
+                                        .build();
 
-                setResult(Activity.RESULT_OK);
-                finish();
-            }
-            else {
-                // Hide keyboard
-                View view = this.getCurrentFocus();
-                if (view != null) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
-
-                // Display error message
-                Snackbar.make(registerLayout, "Username or email already in use", Snackbar.LENGTH_LONG).show();
-            }
+                                user.updateProfile(profileUpdates)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    setResult(Activity.RESULT_OK);
+                                                    finish();
+                                                }
+                                            }
+                                        });
+                            } else {
+                                emailBox.requestFocus();
+                                emailBox.setError("Email already in use");
+                            }
+                        }
+                    });
         }
+    }
+
+    public void firebaseRegister() {
+
     }
 
     public void goToLogin() {
