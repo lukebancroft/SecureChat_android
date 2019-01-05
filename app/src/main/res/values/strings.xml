@@ -8,9 +8,11 @@
     <string name="pwd_text">Password</string>
     <string name="pwd_confirm_text">Confirm password</string>
     <string name="login_btn_text">Sign in</string>
+    <string name="register_text">Register</string>
     <string name="register_btn_text">Sign up</string>
     <string name="register_link_text">Not a member? Register</string>
     <string name="back_to_login_link_text">Already have an account? Login</string>
+    <string name="addcontact_text">Add contacts</string>
 
     <!-- Messaging-->
     <string name="switch_btn_text">Switch</string>

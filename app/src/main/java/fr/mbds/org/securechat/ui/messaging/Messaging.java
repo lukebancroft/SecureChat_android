@@ -7,9 +7,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.ui.connection.Register;
@@ -69,6 +74,19 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
         }
 
         switchViews();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    public void onLogoutAction(MenuItem mi) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signOut();
+        finish();
     }
 
     @Override

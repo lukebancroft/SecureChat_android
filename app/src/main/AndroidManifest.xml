@@ -25,9 +25,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.messaging.Messaging" android:label="@string/app_name"/>
-        <activity android:name=".ui.messaging.AddContact" android:label="@string/app_name"/>
-        <activity android:name=".ui.connection.Register" android:label="@string/app_name"/>
+        <activity android:name=".ui.messaging.Messaging" android:label="Message"/>
+        <activity android:name=".ui.messaging.AddContact" android:label="@string/addcontact_text"/>
+        <activity android:name=".ui.connection.Register" android:label="@string/register_text"/>
         <activity android:name=".ui.encryption.DecryptionTester" android:label="@string/app_name"/>
 
     </application>
