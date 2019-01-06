@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/logout_firebase"
-        android:icon="@drawable/ic_logout"
-        android:onClick="onExitAppAction"
+        android:id="@+id/exit"
+        android:icon="@drawable/ic_exit"
+        android:onClick="onLogoutAction"
         app:showAsAction="ifRoom"
-        android:title="logout_firebase">
+        android:title="exit">
     </item>
 </menu>
