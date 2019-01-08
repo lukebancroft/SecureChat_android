@@ -115,7 +115,7 @@ public class ContactListFragment extends Fragment {
     public void updateContactList() {
         Database db = Database.getInstance(getContext());
         contacts.clear();
-        contacts = db.getContacts();
+        contacts.addAll(db.getContacts());
 
         contactAdapter.notifyDataSetChanged();
     }

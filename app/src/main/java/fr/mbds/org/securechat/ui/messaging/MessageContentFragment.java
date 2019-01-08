@@ -128,13 +128,7 @@ public class MessageContentFragment extends Fragment {
                             Database localdb = Database.getInstance(getContext());
                             localdb.createMessage(mAuth.getCurrentUser().getUid(), message, uid, timestamp);
 
-                            /*try {
-                                messages.clear();
-                                messages = localdb.getMessagesFromContactID(uid);
-                                messageAdapter.notifyDataSetChanged();
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }*/
+                            updateMessageList();
                         }
                     });
         }
@@ -143,6 +137,17 @@ public class MessageContentFragment extends Fragment {
     public void setRecipientUID(String recipientUID)
     {
         this.uid = recipientUID;
+    }
+
+    public void updateMessageList() {
+        Database db = Database.getInstance(getContext());
+        try {
+            messages.clear();
+            messages.addAll(db.getMessagesFromContactID(uid));
+            messageAdapter.notifyDataSetChanged();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

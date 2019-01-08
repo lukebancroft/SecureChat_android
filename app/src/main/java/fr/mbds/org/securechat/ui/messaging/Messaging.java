@@ -112,7 +112,7 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
-                //contactList.updateContactList();
+                contactList.updateContactList();
                 Toast.makeText(getApplicationContext(), "Contact added.", Toast.LENGTH_LONG).show();
             }
         }
