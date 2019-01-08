@@ -25,8 +25,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.database.Database;
@@ -36,6 +42,7 @@ public class AddContact extends AppCompatActivity {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     CollectionReference usersRef = db.collection("users");
+    CollectionReference chatsRef = db.collection("chats");
     AppCompatButton emailSearchBtn, usernameSearchBtn;
     EditText emailSearchBox, usernameSearchBox;
 
@@ -107,13 +114,47 @@ public class AddContact extends AppCompatActivity {
                         usersRef.document(mAuth.getCurrentUser().getUid()).update("contacts", FieldValue.arrayUnion(doc.get("uid").toString()));
                         localdb.createContact(doc.get("uid").toString(), doc.get("username").toString(), doc.get("email").toString());
 
-                        setResult(Activity.RESULT_OK);
-                        finish();
+                        establishChat(doc);
                     }
+
+                    setResult(Activity.RESULT_OK);
+                    finish();
+
                 } else {
                     Toast.makeText(getApplicationContext(), "User does not exist.", Toast.LENGTH_LONG).show();
                 }
             }
         });
+    }
+
+    public void establishChat(DocumentSnapshot doc) {
+        final SimpleDateFormat timestampFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        final String contactUid = doc.get("uid").toString();
+
+        String ids[] = {mAuth.getCurrentUser().getUid(), contactUid};
+        final String timestamp = timestampFormatter.format(new Date());
+        Arrays.sort(ids);
+
+        // Create new chat between user
+        Map<String, Object> newMessage = new HashMap<>();
+        newMessage.put("sender", mAuth.getCurrentUser().getUid());
+        newMessage.put("message", "Hi, I just added you to my contacts");
+        // FieldValue.serverTimestamp() is not supported in arrays
+        newMessage.put("timestamp", timestamp);
+
+        List<Map> messages = new ArrayList<>();
+        messages.add(newMessage);
+
+        Map<String, Object> newChat = new HashMap<>();
+        newChat.put("chat", messages);
+
+        chatsRef.document(ids[0] + ids[1]).set(newChat)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Database localdb = Database.getInstance(getApplicationContext());
+                        localdb.createMessage(mAuth.getCurrentUser().getUid(), "Hi, I just added you to my contacts", contactUid, timestamp);
+                    }
+                });
     }
 }

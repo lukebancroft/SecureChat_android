@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.ui.connection.Register;
 
-public class Messaging extends AppCompatActivity implements ContactListFragment.iCallable, MessageContentFragment.iMessages {
+public class Messaging extends AppCompatActivity implements ContactListFragment.iCallable, MessageContentFragment.iMessage {
 
     AppCompatButton switchBtn;
     FloatingActionButton addButton;
@@ -33,7 +33,7 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
 
     @Override
     public void transferData(String s) {
-        messageContent.setText(s);
+        messageContent.setRecipientUID(s);
         goToMessages();
     }
 
@@ -102,14 +102,16 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
-                //isInitialState = !isInitialState;
-                //switchViews();
+                //contactList.updateContactList();
                 Toast.makeText(getApplicationContext(), "Contact added.", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void sendMessage(View view) {
+        messageContent.sendMessage();
     }
 
     public void switchViews() {
@@ -124,7 +126,7 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
                 addButton.show();
             }
             else {
-                fragmentTransaction.replace(fl.getId(), messageContent);
+                fragmentTransaction.replace(fl.getId(), messageContent).addToBackStack(null);
                 isInitialState = false;
                 if (addButton != null) {addButton.hide();}
             }

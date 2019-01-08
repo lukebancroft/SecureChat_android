@@ -56,7 +56,6 @@ public class ContactListFragment extends Fragment {
         transferBtn = (AppCompatButton) mainView.findViewById(R.id.transfer_btn);
 
         Database db = Database.getInstance(getContext());
-
         contacts = db.getContacts();
         contactAdapter = new ContactAdapter(contacts);
 
@@ -90,7 +89,7 @@ public class ContactListFragment extends Fragment {
                         int pos = recyclerView.getChildAdapterPosition(child);
                         if (pos >= 0) {
                             View itemView = recyclerView.getChildAt(pos);
-                            callable.transferData(((TextView) itemView.findViewById(R.id.username_text)).getText().toString());
+                            callable.transferData(contacts.get(pos).uid);
                             return true;
                         }
 
@@ -117,6 +116,14 @@ public class ContactListFragment extends Fragment {
 
 
         return mainView;
+    }
+
+    public void updateContactList() {
+        Database db = Database.getInstance(getContext());
+        contacts.clear();
+        contacts = db.getContacts();
+
+        contactAdapter.notifyDataSetChanged();
     }
 
     @Override
