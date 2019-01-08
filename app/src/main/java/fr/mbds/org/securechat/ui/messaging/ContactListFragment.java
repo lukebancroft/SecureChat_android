@@ -28,9 +28,6 @@ import fr.mbds.org.securechat.database.entities.Contact;
 public class ContactListFragment extends Fragment {
 
     iCallable callable;
-    EditText transferBox;
-    AppCompatButton transferBtn;
-
     RecyclerView recyclerView;
     List<Contact> contacts;
     ContactAdapter contactAdapter;
@@ -45,15 +42,19 @@ public class ContactListFragment extends Fragment {
     public interface iCallable {
         public void transferData(String s);
         public void goToMessages();
+        public void showFab();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.callable.showFab();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View mainView = inflater.inflate(R.layout.contactlist, container, false);
-
-        transferBox = (EditText) mainView.findViewById(R.id.transfer_box);
-        transferBtn = (AppCompatButton) mainView.findViewById(R.id.transfer_btn);
 
         Database db = Database.getInstance(getContext());
         contacts = db.getContacts();
@@ -64,13 +65,6 @@ public class ContactListFragment extends Fragment {
         recyclerView.setAdapter(contactAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        transferBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callable.transferData(transferBox.getText().toString());
-            }
-        });
 
         recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override

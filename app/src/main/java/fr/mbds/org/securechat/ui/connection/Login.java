@@ -18,10 +18,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.database.Database;
@@ -30,6 +44,10 @@ import fr.mbds.org.securechat.ui.messaging.Messaging;
 public class Login extends AppCompatActivity {
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    CollectionReference usersRef = db.collection("users");
+    CollectionReference chatsRef = db.collection("chats");
+
     LinearLayout loginLayout;
     EditText emailBox;
     EditText pwdBox;
@@ -129,6 +147,7 @@ public class Login extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 //FirebaseUser user = mAuth.getCurrentUser();
+                                getContactsAndMessages();
                                 goToMessaging();
                             } else {
                                 Toast.makeText(getApplicationContext(), "Incorrect email or password.",
@@ -138,6 +157,59 @@ public class Login extends AppCompatActivity {
                     });
 
         }
+    }
+
+    public void getContactsAndMessages() {
+        DocumentReference userContacts = usersRef.document(mAuth.getCurrentUser().getUid());
+
+        // Get user's contacts
+        userContacts.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful() && task.getResult().exists()) {
+                    final Database localdb = Database.getInstance(getApplicationContext());
+
+                    //For each contact get chat
+                    for(final Object contactUid : (List)task.getResult().get("contacts")) {
+                        usersRef.document(contactUid.toString())
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful() && task.getResult().exists()) {
+                                            //Add contact to local storage
+                                            localdb.createContact(task.getResult().get("uid").toString(), task.getResult().get("username").toString(), task.getResult().get("email").toString());
+                                            //Get and create all chats (messages) between users
+                                            String ids[] = {mAuth.getCurrentUser().getUid(), contactUid.toString()};
+                                            Arrays.sort(ids);
+                                            chatsRef.document(ids[0] + ids[1]).get()
+                                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                            Database localdb = Database.getInstance(getApplicationContext());
+
+                                                            for(Object message : (List)task.getResult().get("chat")) {
+                                                                message = (Map<String, String>)message;
+                                                                String senderUid = ((Map) message).get("sender").toString();
+                                                                String body = ((Map) message).get("message").toString();
+                                                                String timestamp = ((Map) message).get("timestamp").toString();
+                                                                localdb.createMessage(senderUid, body, contactUid.toString(), timestamp);
+                                                            }
+                                                        }
+                                                    });
+                                        }
+                                    }
+                                });
+                    }
+
+                    setResult(Activity.RESULT_OK);
+                    finish();
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "User does not exist.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     public void goToRegister() {

@@ -66,6 +66,7 @@ public class MessageContentFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        this.messageText.setText("");
         this.isPaused = false;
     }
 
@@ -106,6 +107,7 @@ public class MessageContentFragment extends Fragment {
             final SimpleDateFormat timestampFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             final String timestamp = timestampFormatter.format(new Date());
             final String message = messageText.getText().toString();
+            this.messageText.setText("");
 
             String ids[] = {mAuth.getCurrentUser().getUid(), this.uid};
             Arrays.sort(ids);

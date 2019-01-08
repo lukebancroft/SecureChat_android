@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 
 import fr.mbds.org.securechat.R;
+import fr.mbds.org.securechat.database.Database;
 import fr.mbds.org.securechat.ui.connection.Register;
 
 public class Messaging extends AppCompatActivity implements ContactListFragment.iCallable, MessageContentFragment.iMessage {
@@ -47,6 +48,11 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     @Override
     public void backToContacts() {
         switchViews();
+    }
+
+    @Override
+    public void showFab() {
+        addButton.show();
     }
 
     @Override
@@ -93,6 +99,8 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
                     public void onClick(DialogInterface dialog, int id) {
                         FirebaseAuth mAuth = FirebaseAuth.getInstance();
                         mAuth.signOut();
+                        Database localdb = Database.getInstance(getApplicationContext());
+                        localdb.clearAll();
                         finish();
                     }
                 })

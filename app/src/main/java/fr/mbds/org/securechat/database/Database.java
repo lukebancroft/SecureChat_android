@@ -151,6 +151,12 @@ public class Database {
         db.execSQL("DROP TABLE " + MESSAGES_TABLE_NAME);
     }
 
+    public void clearAll() {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        db.execSQL("DELETE FROM " + DatabaseContract.FeedContact.CONTACTS_TABLE_NAME);
+        db.execSQL("DELETE FROM " + DatabaseContract.FeedContact.MESSAGES_TABLE_NAME);
+    }
+
     public final class DatabaseContract{
 
         private DatabaseContract() {
