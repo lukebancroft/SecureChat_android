@@ -24,6 +24,7 @@ import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.database.Database;
 import fr.mbds.org.securechat.database.adapters.ContactAdapter;
 import fr.mbds.org.securechat.database.entities.Contact;
+import fr.mbds.org.securechat.ui.connection.Login;
 
 public class ContactListFragment extends Fragment {
 

@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.messaging.Messaging" android:label="Messages"/>
+        <activity android:name=".ui.messaging.Messaging" android:label="Messages" android:launchMode="singleTask"/>
         <activity android:name=".ui.messaging.AddContact" android:label="@string/addcontact_text"/>
         <activity android:name=".ui.connection.Register" android:label="@string/register_text"/>
         <activity android:name=".ui.encryption.DecryptionTester" android:label="@string/app_name"/>

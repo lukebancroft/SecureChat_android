@@ -50,6 +50,7 @@ public class AddContact extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addcontact);
+        final Database localdb = Database.getInstance(getApplicationContext());
 
         usernameSearchBtn = (AppCompatButton) findViewById(R.id.username_search_btn);
         usernameSearchBox = (EditText) findViewById(R.id.username_search_box);
@@ -61,15 +62,21 @@ public class AddContact extends AppCompatActivity {
         usernameSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = usernameSearchBox.getText().toString();
+                String username = usernameSearchBox.getText().toString().trim();
 
                 if (username.isEmpty()) {
                     usernameSearchBox.requestFocus();
                     usernameSearchBox.setError("Enter username");
                 } else {
                     usernameSearchBox.setError(null);
-                    Query query = usersRef.whereEqualTo("username", username.trim());
-                    updateContacts(query);
+                    if (username.equals(mAuth.getCurrentUser().getDisplayName())) {
+                        Toast.makeText(getApplicationContext(), "Cannot add yourself.", Toast.LENGTH_LONG).show();
+                    } else if (localdb.CheckIfContactExistsByUsername(username)) {
+                        Toast.makeText(getApplicationContext(), "User is already in your contact list.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Query query = usersRef.whereEqualTo("username", username);
+                        updateContacts(query);
+                    }
                 }
             }
         });
@@ -77,15 +84,21 @@ public class AddContact extends AppCompatActivity {
         emailSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = emailSearchBox.getText().toString();
+                String email = emailSearchBox.getText().toString().trim();
 
                 if (email.isEmpty()) {
                     emailSearchBox.requestFocus();
                     emailSearchBox.setError("Enter email");
                 } else {
                     emailSearchBox.setError(null);
-                    Query query = usersRef.whereEqualTo("email", email.trim());
-                    updateContacts(query);
+                    if (email.equals(mAuth.getCurrentUser().getEmail())) {
+                        Toast.makeText(getApplicationContext(), "Cannot add yourself.", Toast.LENGTH_LONG).show();
+                    } else if (localdb.CheckIfContactExistsByEmail(email)) {
+                        Toast.makeText(getApplicationContext(), "User is already in your contact list.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Query query = usersRef.whereEqualTo("email", email);
+                        updateContacts(query);
+                    }
                 }
             }
         });
@@ -154,7 +167,13 @@ public class AddContact extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         Database localdb = Database.getInstance(getApplicationContext());
                         localdb.createMessage(mAuth.getCurrentUser().getUid(), "Hi, I just added you to my contacts", contactUid, timestamp);
+
+                        addToOthersContacts(contactUid);
                     }
                 });
+    }
+
+    public void addToOthersContacts(String othersUid) {
+        usersRef.document(othersUid).update("contacts", FieldValue.arrayUnion(mAuth.getCurrentUser().getUid()));
     }
 }

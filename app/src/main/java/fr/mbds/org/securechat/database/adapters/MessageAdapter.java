@@ -50,7 +50,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder messageViewHolder, int i) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
         messageViewHolder.body.setText(messages.get(i).body);
         //messageViewHolder.color.setText(messages.get(i).color);

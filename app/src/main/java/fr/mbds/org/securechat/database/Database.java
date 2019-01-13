@@ -16,6 +16,8 @@ import fr.mbds.org.securechat.database.entities.Message;
 import fr.mbds.org.securechat.database.helpers.DatabaseHelper;
 
 import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.CONTACTS_TABLE_NAME;
+import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.CONTACT_EMAIL;
+import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.CONTACT_USERNAME;
 import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.MESSAGES_TABLE_NAME;
 
 public class Database {
@@ -140,6 +142,30 @@ public class Database {
         cursor.close();
 
         return messages;
+    }
+
+    public boolean CheckIfContactExistsByUsername(String username) {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        String query = "Select * from " + CONTACTS_TABLE_NAME + " where " + CONTACT_USERNAME + " = '" + username + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
+    public boolean CheckIfContactExistsByEmail(String email) {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        String query = "Select * from " + CONTACTS_TABLE_NAME + " where " + CONTACT_EMAIL + " = '" + email + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
     }
 
     public void deleteAll() {
