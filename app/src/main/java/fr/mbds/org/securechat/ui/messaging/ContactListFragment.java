@@ -32,6 +32,7 @@ public class ContactListFragment extends Fragment {
     RecyclerView recyclerView;
     List<Contact> contacts;
     ContactAdapter contactAdapter;
+    String sharedText = "";
 
     private long startClickTime;
 
@@ -41,7 +42,7 @@ public class ContactListFragment extends Fragment {
     }
 
     public interface iCallable {
-        public void transferData(String s);
+        public void transferData(String contactUid, String text);
         public void goToMessages();
         public void showFab();
     }
@@ -50,6 +51,12 @@ public class ContactListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         this.callable.showFab();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.sharedText = "";
     }
 
     @Nullable
@@ -84,7 +91,7 @@ public class ContactListFragment extends Fragment {
                         int pos = recyclerView.getChildAdapterPosition(child);
                         if (pos >= 0) {
                             View itemView = recyclerView.getChildAt(pos);
-                            callable.transferData(contacts.get(pos).uid);
+                            callable.transferData(contacts.get(pos).uid , sharedText);
                             return true;
                         }
 

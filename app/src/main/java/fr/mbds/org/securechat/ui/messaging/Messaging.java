@@ -151,8 +151,10 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     }
 
     @Override
-    public void transferData(String s) {
-        messageContent.setRecipientUID(s);
+    public void transferData(String contactUid, String text) {
+        messageContent.setRecipientUID(contactUid);
+        messageContent.text = text;
+        System.out.println(text);
         goToMessages();
     }
 
@@ -180,6 +182,21 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     }
 
     @Override
+    public void onNewIntent(Intent intent) {
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (Intent.ACTION_SEND.equals(action) && type != null){
+            if ("text/plain".equals(type)) {
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                if (sharedText != null) {
+                    contactList.sharedText = sharedText;
+                }
+            }
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.messaging);
@@ -201,7 +218,7 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
                 .setContentIntent(pendingIntent)
                 .build();
 
-        handler.postDelayed(runnable, 30000);
+        handler.postDelayed(runnable, 5000);
         messageContent.setRecipientUID("");
 
         if (addButton != null) {

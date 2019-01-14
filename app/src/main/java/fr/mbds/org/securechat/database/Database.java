@@ -62,7 +62,7 @@ public class Database {
 
         ContentValues values = new ContentValues();
         values.put(DatabaseContract.FeedContact.MESSAGE_SENDER, sender);
-        values.put(DatabaseContract.FeedContact.MESSAGE_BODY, body);
+        values.put(DatabaseContract.FeedContact.MESSAGE_BODY, body.replaceAll("'", "\'"));
         values.put(DatabaseContract.FeedContact.MESSAGE_CHAT_WITH, chatWith);
         values.put(DatabaseContract.FeedContact.MESSAGE_TIMESTAMP, timestamp);
 
@@ -187,10 +187,10 @@ public class Database {
 
     public boolean checkIfMessageExists(String chatWith, String sender, String body, String timestamp) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        String query = "Select * from " + MESSAGES_TABLE_NAME + " where " + MESSAGE_CHAT_WITH + " = '" + chatWith + "' AND " +
-                MESSAGE_SENDER + " = '" + sender + "' AND " + MESSAGE_BODY + " = '" + body + "' AND " + MESSAGE_TIMESTAMP
-                + " = '" + timestamp + "'";
-        Cursor cursor = db.rawQuery(query, null);
+        String query = "Select * from " + MESSAGES_TABLE_NAME + " where " + MESSAGE_CHAT_WITH + " = ? AND " +
+                MESSAGE_SENDER + " = ? AND " + MESSAGE_BODY + " = ? AND " + MESSAGE_TIMESTAMP
+                + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[] { chatWith, sender, body, timestamp });
         if(cursor.getCount() <= 0){
             cursor.close();
             return false;

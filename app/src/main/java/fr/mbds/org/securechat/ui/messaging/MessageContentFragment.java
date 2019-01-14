@@ -42,7 +42,7 @@ import fr.mbds.org.securechat.database.entities.Message;
 
 public class MessageContentFragment extends Fragment {
 
-    String uid = "";
+    String uid, text = "";
     iMessage iMessage;
     boolean isPaused = false;
     EditText messageText;
@@ -66,16 +66,14 @@ public class MessageContentFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        this.messageText.setText("");
+        this.messageText.setText(text);
         this.isPaused = false;
-        if (messages.size() > 0) {
-            System.out.println(messages.get(0).body);
-        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        this.messageText.setText("");
         this.isPaused = true;
     }
 
@@ -141,6 +139,13 @@ public class MessageContentFragment extends Fragment {
     {
         this.uid = recipientUID;
         updateMessageList();
+    }
+
+    public void setMessageText(String text)
+    {
+        if (this.messageText != null) {
+            this.messageText.setText(text);
+        }
     }
 
     public void updateMessageList() {
