@@ -2,9 +2,14 @@ package fr.mbds.org.securechat.ui.messaging;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -45,6 +50,11 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     MessageContentFragment messageContent = new MessageContentFragment();
     FragmentTransaction fragmentTransaction;
 
+    NotificationManager notificationManager;
+    Notification messageNotification;
+    private static String DEFAULT_CHANNEL_ID = "default_channel";
+    private static String DEFAULT_CHANNEL_NAME = "Default";
+
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     CollectionReference usersRef = db.collection("users");
@@ -59,9 +69,12 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
         public void run() {
             if (mAuth.getCurrentUser() != null) {
                 if (hasBeenAdded) {
-                    //Update recycler views
+                    // Update recycler views
                     contactList.updateContactList();
                     messageContent.updateMessageList();
+                    // Notify the user
+                    sendNotification();
+
                 }
                 if (!executingRetrieve) {
                     executingRetrieve = true;
@@ -175,6 +188,19 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
         fl2 = (FrameLayout) findViewById(R.id.fragmentHolder2);
         addButton = (FloatingActionButton) findViewById(R.id.add_button);
 
+
+        Intent intent = new Intent(getApplicationContext(), this.getClass());
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        createNotificationChannel(notificationManager);
+        messageNotification = new NotificationCompat.Builder(this, DEFAULT_CHANNEL_ID)
+                .setContentTitle("New message")   //Set the title of Notification
+                .setContentText("You have received a new message.")    //Set the text for notification
+                .setSmallIcon(R.drawable.ic_icons_threema)   //Set the icon
+                .setAutoCancel(true)    //Close notification after click
+                .setContentIntent(pendingIntent)
+                .build();
+
         handler.postDelayed(runnable, 30000);
         messageContent.setRecipientUID("");
 
@@ -260,5 +286,32 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     public void goToAddContact() {
         Intent addContactIntent = new Intent(this, AddContact.class);
         this.startActivityForResult(addContactIntent, 1);
+    }
+
+    public static void createNotificationChannel(NotificationManager notificationManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //Create channel only if it is not already created
+            if (notificationManager.getNotificationChannel(DEFAULT_CHANNEL_ID) == null) {
+                notificationManager.createNotificationChannel(new NotificationChannel(
+                        DEFAULT_CHANNEL_ID, DEFAULT_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT
+                ));
+            }
+        }
+    }
+
+    public void sendNotification() {
+        System.out.println("notify");
+        this.notificationManager.notify(1, this.messageNotification);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if (this.addButton == null || this.addButton.getVisibility() == View.VISIBLE) {
+            onLogoutAction(null);
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 }
