@@ -49,11 +49,13 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     ContactListFragment contactList = new ContactListFragment();
     MessageContentFragment messageContent = new MessageContentFragment();
     FragmentTransaction fragmentTransaction;
+    String notifiedUid = "";
 
     NotificationManager notificationManager;
     Notification messageNotification;
     private static String DEFAULT_CHANNEL_ID = "default_channel";
     private static String DEFAULT_CHANNEL_NAME = "Default";
+    private static String NOTIFICATION_ACTION = "notification_action";
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -68,6 +70,7 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
         @Override
         public void run() {
             if (mAuth.getCurrentUser() != null) {
+
                 if (hasBeenAdded) {
                     // Update recycler views
                     contactList.updateContactList();
@@ -133,6 +136,7 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
 
                                                                         // New message has been received
                                                                         hasBeenAdded = true;
+                                                                        notifiedUid = contactUid.toString();
                                                                     }
                                                                 }
                                                             }
@@ -154,7 +158,6 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     public void transferData(String contactUid, String text) {
         messageContent.setRecipientUID(contactUid);
         messageContent.text = text;
-        System.out.println(text);
         goToMessages();
     }
 
@@ -193,6 +196,10 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
                     contactList.sharedText = sharedText;
                 }
             }
+        } else if (NOTIFICATION_ACTION.equals(action)) {
+            messageContent.setRecipientUID(notifiedUid);
+            isInitialState = true;
+            goToMessages();
         }
     }
 
@@ -206,7 +213,7 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
         addButton = (FloatingActionButton) findViewById(R.id.add_button);
 
 
-        Intent intent = new Intent(getApplicationContext(), this.getClass());
+        Intent intent = new Intent(getApplicationContext(), this.getClass()).setAction(NOTIFICATION_ACTION);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         createNotificationChannel(notificationManager);
@@ -290,7 +297,7 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
                 isInitialState = false;
                 if (addButton != null) {addButton.hide();}
             }
-            fragmentTransaction.commit();
+            fragmentTransaction.commitAllowingStateLoss();
         }
         else {
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -317,7 +324,6 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     }
 
     public void sendNotification() {
-        System.out.println("notify");
         this.notificationManager.notify(1, this.messageNotification);
     }
 

@@ -42,7 +42,8 @@ import fr.mbds.org.securechat.database.entities.Message;
 
 public class MessageContentFragment extends Fragment {
 
-    String uid, text = "";
+    String uid = "";
+    String text = "";
     iMessage iMessage;
     boolean isPaused = false;
     EditText messageText;
