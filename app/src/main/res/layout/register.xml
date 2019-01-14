@@ -18,7 +18,8 @@
             android:id="@+id/username_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/username_text" />
+            android:hint="@string/username_text"
+            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -32,7 +33,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/email_text"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -45,7 +47,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:hint="@string/pwd_text"/>
+            android:hint="@string/pwd_text"
+            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout

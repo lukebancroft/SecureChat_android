@@ -17,8 +17,13 @@ import fr.mbds.org.securechat.database.helpers.DatabaseHelper;
 
 import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.CONTACTS_TABLE_NAME;
 import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.CONTACT_EMAIL;
+import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.CONTACT_UID;
 import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.CONTACT_USERNAME;
 import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.MESSAGES_TABLE_NAME;
+import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.MESSAGE_BODY;
+import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.MESSAGE_CHAT_WITH;
+import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.MESSAGE_SENDER;
+import static fr.mbds.org.securechat.database.Database.DatabaseContract.FeedContact.MESSAGE_TIMESTAMP;
 
 public class Database {
 
@@ -144,7 +149,19 @@ public class Database {
         return messages;
     }
 
-    public boolean CheckIfContactExistsByUsername(String username) {
+    public boolean checkIfContactExistsByUid(String uid) {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        String query = "Select * from " + CONTACTS_TABLE_NAME + " where " + CONTACT_UID + " = '" + uid + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
+    public boolean checkIfContactExistsByUsername(String username) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         String query = "Select * from " + CONTACTS_TABLE_NAME + " where " + CONTACT_USERNAME + " = '" + username + "'";
         Cursor cursor = db.rawQuery(query, null);
@@ -156,9 +173,23 @@ public class Database {
         return true;
     }
 
-    public boolean CheckIfContactExistsByEmail(String email) {
+    public boolean checkIfContactExistsByEmail(String email) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         String query = "Select * from " + CONTACTS_TABLE_NAME + " where " + CONTACT_EMAIL + " = '" + email + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
+    public boolean checkIfMessageExists(String chatWith, String sender, String body, String timestamp) {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        String query = "Select * from " + MESSAGES_TABLE_NAME + " where " + MESSAGE_CHAT_WITH + " = '" + chatWith + "' AND " +
+                MESSAGE_SENDER + " = '" + sender + "' AND " + MESSAGE_BODY + " = '" + body + "' AND " + MESSAGE_TIMESTAMP
+                + " = '" + timestamp + "'";
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.getCount() <= 0){
             cursor.close();

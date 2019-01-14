@@ -68,6 +68,9 @@ public class MessageContentFragment extends Fragment {
         super.onResume();
         this.messageText.setText("");
         this.isPaused = false;
+        if (messages.size() > 0) {
+            System.out.println(messages.get(0).body);
+        }
     }
 
     @Override
@@ -137,16 +140,19 @@ public class MessageContentFragment extends Fragment {
     public void setRecipientUID(String recipientUID)
     {
         this.uid = recipientUID;
+        updateMessageList();
     }
 
     public void updateMessageList() {
-        Database db = Database.getInstance(getContext());
-        try {
-            messages.clear();
-            messages.addAll(db.getMessagesFromContactID(uid));
-            messageAdapter.notifyDataSetChanged();
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (this.uid != "" && messages != null) {
+            Database db = Database.getInstance(getContext());
+            try {
+                messages.clear();
+                messages.addAll(db.getMessagesFromContactID(uid));
+                messageAdapter.notifyDataSetChanged();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
     }
 

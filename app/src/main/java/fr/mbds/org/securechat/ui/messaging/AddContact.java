@@ -71,7 +71,7 @@ public class AddContact extends AppCompatActivity {
                     usernameSearchBox.setError(null);
                     if (username.equals(mAuth.getCurrentUser().getDisplayName())) {
                         Toast.makeText(getApplicationContext(), "Cannot add yourself.", Toast.LENGTH_LONG).show();
-                    } else if (localdb.CheckIfContactExistsByUsername(username)) {
+                    } else if (localdb.checkIfContactExistsByUsername(username)) {
                         Toast.makeText(getApplicationContext(), "User is already in your contact list.", Toast.LENGTH_LONG).show();
                     } else {
                         Query query = usersRef.whereEqualTo("username", username);
@@ -93,7 +93,7 @@ public class AddContact extends AppCompatActivity {
                     emailSearchBox.setError(null);
                     if (email.equals(mAuth.getCurrentUser().getEmail())) {
                         Toast.makeText(getApplicationContext(), "Cannot add yourself.", Toast.LENGTH_LONG).show();
-                    } else if (localdb.CheckIfContactExistsByEmail(email)) {
+                    } else if (localdb.checkIfContactExistsByEmail(email)) {
                         Toast.makeText(getApplicationContext(), "User is already in your contact list.", Toast.LENGTH_LONG).show();
                     } else {
                         Query query = usersRef.whereEqualTo("email", email);

@@ -4,9 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.Menu;
@@ -16,7 +21,17 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import fr.mbds.org.securechat.R;
 import fr.mbds.org.securechat.database.Database;
@@ -24,13 +39,103 @@ import fr.mbds.org.securechat.ui.connection.Register;
 
 public class Messaging extends AppCompatActivity implements ContactListFragment.iCallable, MessageContentFragment.iMessage {
 
-    AppCompatButton switchBtn;
     FloatingActionButton addButton;
-    boolean isInitialState = false;
     FrameLayout fl, fl2;
     ContactListFragment contactList = new ContactListFragment();
     MessageContentFragment messageContent = new MessageContentFragment();
     FragmentTransaction fragmentTransaction;
+
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    CollectionReference usersRef = db.collection("users");
+    CollectionReference chatsRef = db.collection("chats");
+
+    boolean isInitialState, executingRetrieve, hasBeenAdded = false;
+    int notReceivedCounter = 0;
+    int handlerDelay;
+    private Handler handler = new Handler();
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mAuth.getCurrentUser() != null) {
+                if (hasBeenAdded) {
+                    //Update recycler views
+                    contactList.updateContactList();
+                    messageContent.updateMessageList();
+                }
+                if (!executingRetrieve) {
+                    executingRetrieve = true;
+                    hasBeenAdded = false;
+                    retrieveData();
+                }
+                handlerDelay = (notReceivedCounter < 6) ? 5000 : 30000;
+                handler.postDelayed(this, handlerDelay);
+            }
+        }
+    };
+
+    public void retrieveData() {
+        DocumentReference userContacts = usersRef.document(mAuth.getCurrentUser().getUid());
+        // Get user's contacts
+        userContacts.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful() && task.getResult().exists()) {
+                    final Database localdb = Database.getInstance(getApplicationContext());
+                    List contacts = (List)task.getResult().get("contacts");
+
+                    if (contacts != null && contacts.size() > 0) {
+                        //For each contact get chat
+                        for (final Object contactUid : contacts) {
+                            usersRef.document(contactUid.toString())
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            if (task.isSuccessful() && task.getResult().exists()) {
+                                                // Add contact to local storage if doesn't already exist
+                                                if (!localdb.checkIfContactExistsByUid(contactUid.toString())) {
+                                                    localdb.createContact(task.getResult().get("uid").toString(), task.getResult().get("username").toString(), task.getResult().get("email").toString());
+                                                    // New contact has been added
+                                                    hasBeenAdded = true;
+                                                }
+                                                //Get all chats (messages) between users
+                                                String ids[] = {mAuth.getCurrentUser().getUid(), contactUid.toString()};
+                                                Arrays.sort(ids);
+                                                chatsRef.document(ids[0] + ids[1]).get()
+                                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                Database localdb = Database.getInstance(getApplicationContext());
+
+                                                                // Add messages to local storage if don't already exist
+                                                                for (Object message : (List) task.getResult().get("chat")) {
+                                                                    message = (Map<String, String>) message;
+                                                                    String senderUid = ((Map) message).get("sender").toString();
+                                                                    String body = ((Map) message).get("message").toString();
+                                                                    String timestamp = ((Map) message).get("timestamp").toString();
+
+                                                                    if (!localdb.checkIfMessageExists(contactUid.toString(), senderUid, body, timestamp)) {
+                                                                        localdb.createMessage(senderUid, body, contactUid.toString(), timestamp);
+
+                                                                        // New message has been received
+                                                                        hasBeenAdded = true;
+                                                                    }
+                                                                }
+                                                            }
+                                                        });
+                                            }
+                                            notReceivedCounter = hasBeenAdded ? 0 : notReceivedCounter++;
+                                            // New check can be run
+                                            executingRetrieve = false;
+                                        }
+                                    });
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     @Override
     public void transferData(String s) {
@@ -40,7 +145,9 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
 
     @Override
     public void goToMessages() {
-        if (switchBtn != null) {
+        int orientation = getResources().getConfiguration().orientation;
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             switchViews();
         }
     }
@@ -52,7 +159,11 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
 
     @Override
     public void showFab() {
-        addButton.show();
+        int orientation = getResources().getConfiguration().orientation;
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            addButton.show();
+        }
     }
 
     @Override
@@ -62,16 +173,12 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
 
         fl = (FrameLayout) findViewById(R.id.fragmentHolder);
         fl2 = (FrameLayout) findViewById(R.id.fragmentHolder2);
-        switchBtn = (AppCompatButton) findViewById(R.id.switch_btn);
         addButton = (FloatingActionButton) findViewById(R.id.add_button);
 
-        if (switchBtn != null && addButton != null) {
-            switchBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    switchViews();
-                }
-            });
+        handler.postDelayed(runnable, 30000);
+        messageContent.setRecipientUID("");
+
+        if (addButton != null) {
 
             addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -101,6 +208,7 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
                         mAuth.signOut();
                         Database localdb = Database.getInstance(getApplicationContext());
                         localdb.clearAll();
+                        messageContent.setRecipientUID("");
                         finish();
                     }
                 })
@@ -123,8 +231,9 @@ public class Messaging extends AppCompatActivity implements ContactListFragment.
     }
 
     public void switchViews() {
+        int orientation = getResources().getConfiguration().orientation;
 
-        if (switchBtn != null) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
