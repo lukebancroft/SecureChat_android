@@ -93,7 +93,7 @@ public class Register extends AppCompatActivity {
         // Check password empty
         if (password.isEmpty() || password.length() < 6) {
             pwdBox.requestFocus();
-            pwdBox.setError("Enter password");
+            pwdBox.setError("Enter password (6 character min.)");
             fieldsValid = false;
         } else {
             pwdBox.setError(null);
